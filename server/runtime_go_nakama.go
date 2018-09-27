@@ -17,6 +17,10 @@ package server
 import (
 	"database/sql"
 	"encoding/json"
+	"strings"
+	"sync"
+	"time"
+
 	"github.com/gofrs/uuid"
 	"github.com/golang/protobuf/ptypes/timestamp"
 	"github.com/golang/protobuf/ptypes/wrappers"
@@ -28,9 +32,6 @@ import (
 	"github.com/pkg/errors"
 	"go.uber.org/atomic"
 	"go.uber.org/zap"
-	"strings"
-	"sync"
-	"time"
 )
 
 type RuntimeGoNakamaModule struct {
@@ -920,7 +921,7 @@ func (n *RuntimeGoNakamaModule) StorageWrite(writes []*runtime.StorageWrite) ([]
 			}
 		}
 		var valueMap map[string]interface{}
-		err = json.Unmarshal([]byte(write.Value), valueMap)
+		err = json.Unmarshal([]byte(write.Value), &valueMap)
 		if err != nil {
 			return nil, errors.New("value must be a JSON-encoded object")
 		}
